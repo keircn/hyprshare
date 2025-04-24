@@ -27,16 +27,14 @@ func main() {
 		return
 	}
 
-	fmt.Printf("Screenshot saved to: %s\n", screenshotPath)
-
 	if opts.Upload {
-		err = upload.ToHost(screenshotPath, opts.Host, opts.FallbackHost, opts.Debug)
+		err = upload.ToHost(screenshotPath, opts.Host, opts.Debug)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Upload failed: %v\n", err)
 			fmt.Fprintf(os.Stderr, "\nThe screenshot was still saved to: %s\n", screenshotPath)
 			if opts.Debug {
-				fmt.Fprintln(os.Stderr, "\nTip: Verify hostman configuration with 'hostman config'")
-				fmt.Fprintln(os.Stderr, "You may need to update your API key or try a different host.")
+				fmt.Fprintln(os.Stderr, "\nTip: Check that hostman works when used directly:")
+				fmt.Fprintf(os.Stderr, "  hostman upload %s\n", screenshotPath)
 			}
 			os.Exit(1)
 		}

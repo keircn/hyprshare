@@ -21,7 +21,6 @@ type Options struct {
 	Command       []string
 	Upload        bool
 	Host          string
-	FallbackHost  string
 }
 
 func ParseOptions() (Options, error) {
@@ -52,8 +51,7 @@ func ParseOptions() (Options, error) {
 	flag.BoolVar(&opts.ClipboardOnly, "clipboard-only", false, "Copy screenshot to clipboard only")
 	flag.BoolVar(&opts.Upload, "upload", true, "Upload screenshot after capturing")
 	flag.BoolVar(&opts.Upload, "u", true, "Upload screenshot (shorthand)")
-	flag.StringVar(&opts.Host, "host", "anonhost", "Image host to use with hostman")
-	flag.StringVar(&opts.FallbackHost, "fallback-host", "", "Fallback host if primary fails")
+	flag.StringVar(&opts.Host, "host", "default", "Image host to use (default: system default host)")
 
 	flag.Usage = func() {
 		fmt.Fprintf(os.Stderr, "HyprShare: Screenshot and upload utility for Hyprland\n\n")

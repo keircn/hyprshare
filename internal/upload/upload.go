@@ -7,29 +7,24 @@ import (
 	"strings"
 )
 
-func ToHost(screenshotPath, primaryHost, fallbackHost string, debug bool) error {
-	err := uploadToSingleHost(screenshotPath, primaryHost, debug)
-	if err == nil {
-		return nil
-	}
-
-	if fallbackHost != "" {
-		fmt.Printf("Primary host failed, trying fallback host: %s\n", fallbackHost)
-		return uploadToSingleHost(screenshotPath, fallbackHost, debug)
-	}
-
-	return err
-}
-
-func uploadToSingleHost(screenshotPath, host string, debug bool) error {
-	fmt.Printf("Uploading to %s...\n", host)
-
+func ToHost(screenshotPath, host string, debug bool) error {
 	hostmanPath, err := exec.LookPath("hostman")
 	if err != nil {
 		return fmt.Errorf("hostman not found in PATH: %v", err)
 	}
 
-	args := []string{"upload", screenshotPath, "--host", host}
+	var args []string
+	if host == "anonhost" || host == "default" || host == "" {
+		args = []string{"upload", screenshotPath}
+		if debug {
+			fmt.Println("Uploading using default host (anonhost)...")
+		}
+	} else {
+		args = []string{"upload", screenshotPath, "--host", host}
+		if debug {
+			fmt.Printf("Uploading to %s...\n", host)
+		}
+	}
 
 	if debug {
 		fmt.Printf("Command: %s %s\n", hostmanPath, strings.Join(args, " "))
