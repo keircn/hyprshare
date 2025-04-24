@@ -1,12 +1,12 @@
 package main
 
 import (
-    "fmt"
-    "os"
+	"fmt"
+	"os"
 
-    "github.com/q4ow/hyprshare/internal/cli"
-    "github.com/q4ow/hyprshare/internal/screenshot"
-    "github.com/q4ow/hyprshare/internal/upload"
+	"github.com/q4ow/hyprshare/internal/cli"
+	"github.com/q4ow/hyprshare/internal/screenshot"
+	"github.com/q4ow/hyprshare/internal/upload"
 )
 
 func main() {
@@ -16,16 +16,9 @@ func main() {
 		os.Exit(1)
 	}
 
-	if !opts.ClipboardOnly {
-		if err := os.MkdirAll(opts.OutputFolder, 0755); err != nil {
-			fmt.Fprintf(os.Stderr, "Failed to create output directory: %v\n", err)
-			os.Exit(1)
-		}
-	}
-
 	screenshotPath, err := screenshot.Capture(opts)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Failed to capture screenshot: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
 		os.Exit(1)
 	}
 
@@ -37,9 +30,14 @@ func main() {
 	fmt.Printf("Screenshot saved to: %s\n", screenshotPath)
 
 	if opts.Upload {
-		err = upload.ToHost(screenshotPath, opts.Host)
+		err = upload.ToHost(screenshotPath, opts.Host, opts.FallbackHost, opts.Debug)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "Failed to upload screenshot: %v\n", err)
+			fmt.Fprintf(os.Stderr, "Upload failed: %v\n", err)
+			fmt.Fprintf(os.Stderr, "\nThe screenshot was still saved to: %s\n", screenshotPath)
+			if opts.Debug {
+				fmt.Fprintln(os.Stderr, "\nTip: Verify hostman configuration with 'hostman config'")
+				fmt.Fprintln(os.Stderr, "You may need to update your API key or try a different host.")
+			}
 			os.Exit(1)
 		}
 	}

@@ -21,6 +21,7 @@ type Options struct {
 	Command       []string
 	Upload        bool
 	Host          string
+	FallbackHost  string
 }
 
 func ParseOptions() (Options, error) {
@@ -48,22 +49,29 @@ func ParseOptions() (Options, error) {
 	flag.BoolVar(&opts.Raw, "r", false, "Output raw image data to stdout (shorthand)")
 	flag.IntVar(&opts.NotifTimeout, "notif-timeout", 5000, "Notification timeout in milliseconds")
 	flag.IntVar(&opts.NotifTimeout, "t", 5000, "Notification timeout in milliseconds (shorthand)")
-	flag.BoolVar(&opts.ClipboardOnly, "clipboard-only", false, "Copy screenshot to clipboard and don't save image")
+	flag.BoolVar(&opts.ClipboardOnly, "clipboard-only", false, "Copy screenshot to clipboard only")
 	flag.BoolVar(&opts.Upload, "upload", true, "Upload screenshot after capturing")
-	flag.BoolVar(&opts.Upload, "u", true, "Upload screenshot after capturing (shorthand)")
-	flag.StringVar(&opts.Host, "host", "e-z", "Image host to use with hostman")
+	flag.BoolVar(&opts.Upload, "u", true, "Upload screenshot (shorthand)")
+	flag.StringVar(&opts.Host, "host", "anonhost", "Image host to use with hostman")
+	flag.StringVar(&opts.FallbackHost, "fallback-host", "", "Fallback host if primary fails")
 
 	flag.Usage = func() {
-		fmt.Fprintf(os.Stderr, "Usage: %s [options...] -- [command]\n\n", os.Args[0])
-		fmt.Fprintf(os.Stderr, "A wrapper around hyprshot that uploads screenshots to an image host\n\n")
+		fmt.Fprintf(os.Stderr, "HyprShare: Screenshot and upload utility for Hyprland\n\n")
+		fmt.Fprintf(os.Stderr, "Usage: %s -m <mode> [options]\n\n", os.Args[0])
+		fmt.Fprintf(os.Stderr, "Modes:\n")
+		fmt.Fprintf(os.Stderr, "  output    - full monitor screenshot\n")
+		fmt.Fprintf(os.Stderr, "  window    - screenshot of a window\n")
+		fmt.Fprintf(os.Stderr, "  region    - screenshot of selected area\n")
+		fmt.Fprintf(os.Stderr, "  active    - active window/output (use with -m)\n\n")
+
 		fmt.Fprintf(os.Stderr, "Options:\n")
 		flag.PrintDefaults()
-		fmt.Fprintf(os.Stderr, "\nModes:\n")
-		fmt.Fprintf(os.Stderr, "  output        take screenshot of an entire monitor\n")
-		fmt.Fprintf(os.Stderr, "  window        take screenshot of an open window\n")
-		fmt.Fprintf(os.Stderr, "  region        take screenshot of selected region\n")
-		fmt.Fprintf(os.Stderr, "  active        take screenshot of active window|output\n")
-		fmt.Fprintf(os.Stderr, "  OUTPUT_NAME   take screenshot of output with OUTPUT_NAME\n")
+
+		fmt.Fprintf(os.Stderr, "\nExamples:\n")
+		fmt.Fprintf(os.Stderr, "  hyprshare -m window                      # Window screenshot with default host\n")
+		fmt.Fprintf(os.Stderr, "  hyprshare -m region --host imgur         # Region screenshot to imgur\n")
+		fmt.Fprintf(os.Stderr, "  hyprshare -m window --u=false            # Window screenshot without upload\n")
+		fmt.Fprintf(os.Stderr, "  hyprshare -m region -d                   # With debug output\n")
 	}
 
 	commandIndex := -1
@@ -93,7 +101,7 @@ func ParseOptions() (Options, error) {
 
 	if len(opts.Mode) == 0 {
 		flag.Usage()
-		os.Exit(1)
+		return opts, fmt.Errorf("no screenshot mode specified, use -m/--mode")
 	}
 
 	return opts, nil
