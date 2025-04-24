@@ -3,7 +3,6 @@ package main
 import (
     "fmt"
     "os"
-    "path/filepath"
 
     "github.com/q4ow/hyprshare/internal/cli"
     "github.com/q4ow/hyprshare/internal/screenshot"

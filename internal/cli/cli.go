@@ -92,7 +92,8 @@ func ParseOptions() (Options, error) {
 	}
 
 	if len(opts.Mode) == 0 {
-		return opts, fmt.Errorf("no screenshot mode specified, use -m/--mode")
+		flag.Usage()
+		os.Exit(1)
 	}
 
 	return opts, nil
