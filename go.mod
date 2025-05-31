@@ -1,3 +1,3 @@
-module github.com/q4ow/hyprshare
+module github.com/keircn/hyprshare
 
 go 1.24.2

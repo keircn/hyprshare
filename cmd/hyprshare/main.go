@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/q4ow/hyprshare/internal/cli"
-	"github.com/q4ow/hyprshare/internal/screenshot"
-	"github.com/q4ow/hyprshare/internal/upload"
+	"github.com/keircn/hyprshare/internal/cli"
+	"github.com/keircn/hyprshare/internal/screenshot"
+	"github.com/keircn/hyprshare/internal/upload"
 )
 
 func main() {

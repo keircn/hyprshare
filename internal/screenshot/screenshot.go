@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/q4ow/hyprshare/internal/cli"
+	"github.com/keircn/hyprshare/internal/cli"
 )
 
 func Capture(opts cli.Options) (string, error) {
