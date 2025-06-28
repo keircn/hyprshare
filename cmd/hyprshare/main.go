@@ -28,13 +28,17 @@ func main() {
 	}
 
 	if opts.Upload {
-		err = upload.ToHost(screenshotPath, opts.Host, opts.Debug)
+		err = upload.ToHost(screenshotPath, opts.Host, opts.UseAt, opts.Debug)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Upload failed: %v\n", err)
 			fmt.Fprintf(os.Stderr, "\nThe screenshot was still saved to: %s\n", screenshotPath)
 			if opts.Debug {
-				fmt.Fprintln(os.Stderr, "\nTip: Check that hostman works when used directly:")
-				fmt.Fprintf(os.Stderr, "  hostman upload %s\n", screenshotPath)
+				binaryName := "hostman"
+				if opts.UseAt {
+					binaryName = "at"
+				}
+				fmt.Fprintf(os.Stderr, "\nTip: Check that %s works when used directly:\n", binaryName)
+				fmt.Fprintf(os.Stderr, "  %s upload %s\n", binaryName, screenshotPath)
 			}
 			os.Exit(1)
 		}
