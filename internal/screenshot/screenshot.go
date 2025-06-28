@@ -13,7 +13,6 @@ import (
 )
 
 func Capture(opts cli.Options) (string, error) {
-	// Generate our own unique filepath
 	timestamp := time.Now().Format("20060102-150405")
 	uniqueID := fmt.Sprintf("%d", time.Now().UnixNano()%10000)
 	filename := fmt.Sprintf("hyprshare-%s-%s.png", timestamp, uniqueID)
@@ -27,26 +26,22 @@ func Capture(opts cli.Options) (string, error) {
 		outputPath = filepath.Join(opts.OutputFolder, filename)
 	}
 
-	// Make sure output directory exists
 	if !opts.ClipboardOnly {
 		if err := os.MkdirAll(opts.OutputFolder, 0755); err != nil {
 			return "", fmt.Errorf("failed to create output directory: %v", err)
 		}
 	}
 
-	// Find hyprshot in PATH
 	hypshotPath, err := exec.LookPath("hyprshot")
 	if err != nil {
 		return "", fmt.Errorf("hyprshot not found in PATH: %v", err)
 	}
 
-	// Prepare arguments for hyprshot
 	args := []string{}
 	for _, mode := range opts.Mode {
 		args = append(args, "-m", mode)
 	}
 
-	// Always specify our output path
 	args = append(args, "-o", filepath.Dir(outputPath))
 	args = append(args, "-f", filepath.Base(outputPath))
 
@@ -73,36 +68,29 @@ func Capture(opts cli.Options) (string, error) {
 		args = append(args, opts.Command...)
 	}
 
-	// Print command for debugging
 	if opts.Debug {
 		fmt.Printf("Command: %s %s\n", hypshotPath, strings.Join(args, " "))
 	}
 
-	// Run hyprshot
 	cmd := exec.Command(hypshotPath, args...)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
-	cmd.Run() // Ignore error since hyprshot might exit with non-zero code
+	cmd.Run()
 
-	// Give hyprshot a moment to finish writing the file
 	time.Sleep(200 * time.Millisecond)
 
-	// For clipboard-only mode, we're done
 	if opts.ClipboardOnly {
 		return "", nil
 	}
 
-	// For regular mode, check if the file exists
 	info, statErr := os.Stat(outputPath)
 	if statErr != nil {
 		if opts.Debug {
 			fmt.Printf("Debug: file check error at %s: %v\n", outputPath, statErr)
 		}
 
-		// Try looking in the directory to see what's there
 		files, _ := filepath.Glob(filepath.Join(opts.OutputFolder, "hyprshare-*"))
 		if len(files) > 0 {
-			// Sort files by modification time to find the most recent
 			var newestFile string
 			var newestTime time.Time
 
