@@ -22,6 +22,7 @@ type Options struct {
 	Upload        bool
 	Host          string
 	UseAt         bool
+	UseFlameshot  bool
 }
 
 func ParseOptions() (Options, error) {
@@ -55,6 +56,8 @@ func ParseOptions() (Options, error) {
 	flag.StringVar(&opts.Host, "host", "default", "Image host to use (default: system default host)")
 	flag.BoolVar(&opts.UseAt, "use-at", false, "Use 'at' binary instead of 'hostman' for uploads")
 	flag.BoolVar(&opts.UseAt, "a", false, "Use 'at' binary instead of 'hostman' for uploads (shorthand)")
+	flag.BoolVar(&opts.UseFlameshot, "use-flameshot", false, "Use flameshot instead of hyprshot for screenshots")
+	flag.BoolVar(&opts.UseFlameshot, "F", false, "Use flameshot instead of hyprshot for screenshots (shorthand)")
 
 	flag.Usage = func() {
 		fmt.Fprintf(os.Stderr, "HyprShare: Screenshot and upload utility for Hyprland\n\n")
@@ -74,6 +77,7 @@ func ParseOptions() (Options, error) {
 		fmt.Fprintf(os.Stderr, "  hyprshare -m window --u=false            # Window screenshot without upload\n")
 		fmt.Fprintf(os.Stderr, "  hyprshare -m region -d                   # With debug output\n")
 		fmt.Fprintf(os.Stderr, "  hyprshare -m region --use-at             # Use 'at' binary for upload\n")
+		fmt.Fprintf(os.Stderr, "  hyprshare -m region --use-flameshot      # Use flameshot for screenshot\n")
 	}
 
 	commandIndex := -1
