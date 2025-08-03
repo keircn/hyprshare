@@ -140,7 +140,20 @@ func captureWithHyprshot(hypshotPath, outputPath string, opts cli.Options) error
 	cmd := exec.Command(hypshotPath, args...)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
-	return cmd.Run()
+	err := cmd.Run()
+
+	if err != nil && opts.Debug {
+		fmt.Printf("Debug: hyprshot returned error: %v\n", err)
+	}
+
+	if _, statErr := os.Stat(outputPath); statErr == nil {
+		if opts.Debug {
+			fmt.Printf("Debug: screenshot file created successfully despite exit code\n")
+		}
+		return nil
+	}
+
+	return err
 }
 
 func captureWithFlameshot(outputPath string, opts cli.Options) error {
