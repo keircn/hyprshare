@@ -146,14 +146,20 @@ func captureWithHyprshot(hypshotPath, outputPath string, opts cli.Options) error
 		fmt.Printf("Debug: hyprshot returned error: %v\n", err)
 	}
 
-	if _, statErr := os.Stat(outputPath); statErr == nil {
+	time.Sleep(500 * time.Millisecond)
+
+	if info, statErr := os.Stat(outputPath); statErr == nil && info.Size() > 0 {
 		if opts.Debug {
-			fmt.Printf("Debug: screenshot file created successfully despite exit code\n")
+			fmt.Printf("Debug: screenshot file created successfully despite exit code (size: %d bytes)\n", info.Size())
 		}
 		return nil
 	}
 
-	return err
+	if err != nil {
+		return err
+	}
+
+	return fmt.Errorf("screenshot file not created at %s", outputPath)
 }
 
 func captureWithFlameshot(outputPath string, opts cli.Options) error {
