@@ -146,7 +146,7 @@ func captureWithHyprshot(hypshotPath, outputPath string, opts cli.Options) error
 		fmt.Printf("Debug: hyprshot returned error: %v\n", err)
 	}
 
-	time.Sleep(50 * time.Millisecond)
+	time.Sleep(150 * time.Millisecond)
 
 	if info, statErr := os.Stat(outputPath); statErr == nil && info.Size() > 0 {
 		if opts.Debug {
