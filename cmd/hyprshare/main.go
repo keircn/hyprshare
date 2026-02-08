@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"os/exec"
 
 	"github.com/keircn/hyprshare/internal/cli"
 	"github.com/keircn/hyprshare/internal/screenshot"
@@ -30,6 +31,9 @@ func main() {
 	if opts.Upload {
 		err = upload.ToHost(screenshotPath, opts.Host, opts.UseAt, opts.Debug)
 		if err != nil {
+			if !opts.Silent {
+				_ = exec.Command("notify-send", "HyprShare", fmt.Sprintf("Upload failed: %v", err)).Run()
+			}
 			fmt.Fprintf(os.Stderr, "Upload failed: %v\n", err)
 			fmt.Fprintf(os.Stderr, "\nThe screenshot was still saved to: %s\n", screenshotPath)
 			if opts.Debug {
@@ -41,6 +45,8 @@ func main() {
 				fmt.Fprintf(os.Stderr, "  %s upload %s\n", binaryName, screenshotPath)
 			}
 			os.Exit(1)
+		} else if !opts.Silent {
+			_ = exec.Command("notify-send", "HyprShare", "Screenshot uploaded successfully").Run()
 		}
 	}
 }

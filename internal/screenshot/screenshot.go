@@ -116,7 +116,7 @@ func captureWithHyprshot(hypshotPath, outputPath string, opts cli.Options) error
 	if opts.Debug {
 		args = append(args, "-d")
 	}
-	if opts.Silent {
+	if opts.Silent || opts.Upload {
 		args = append(args, "-s")
 	}
 	if opts.Raw {
